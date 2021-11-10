@@ -1,0 +1,3 @@
+Your answers go here!
+
+Also start by noting if You have a teammate and if I should check this git repository or Your teammates for the grading of code.
