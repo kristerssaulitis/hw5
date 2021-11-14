@@ -92,7 +92,13 @@ void* next_fit(siz, ch_num){
             /*printf("shared memory + 1 sizes :     %i \n", shared_memory[i+1].memory);*/
             break;
         } else {
-            indexNext++;
+            if (i < num){
+                i = indexNext +1;
+            } else{
+                i = 0;
+                indexNext = 0;
+            }
+
         }
     }
     return shared_memory[i].memory;
