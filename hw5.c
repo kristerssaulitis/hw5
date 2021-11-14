@@ -5,10 +5,11 @@
 
 #define MAXSIZE 1024
 #define MAX_LENGTH 256
+#define SIZEOF(x) (sizeof(x) / sizeof((x)[0]))
 
 char* chunkFileName;
 char* sizeFileName;
-int buffer[1024];
+int* buffer;
 char key[256];
 
 char* shared_memory = NULL;
@@ -17,9 +18,11 @@ int* chunkBuffer = NULL;
 int* chunkPointer = NULL;
 int* shared_data = NULL;
 
+size_t chunkCount = 0;
 
-int chunkCount = 0;
-
+int createBuffer();
+int readChunks(FILE *f, char *key);
+int chechInput(int argc, char** argv);
 
 int chechInput(int argc, char** argv){
     if (argc < 2){
@@ -43,7 +46,7 @@ int chechInput(int argc, char** argv){
     for (i =0; i< 2; i++) chunkFileName = strsep(&randomchunks,"=");
     for (i =0; i< 2; i++) sizeFileName = strsep(&ranodmsizes,"=");
 
-    printf("this is chunk :%s and this is size:%s      \n", chunkFileName, sizeFileName);
+    /*printf("this is chunk :%s and this is size:%s      \n", chunkFileName, sizeFileName);*/
     return 0;
 }
 
@@ -52,16 +55,18 @@ int readChunks(FILE *f, char *key){
     int i = 0;
     while (fgets(key, MAX_LENGTH, f)){
         buffer[i] = atoi(key);
-        printf("%i \n", buffer[i]);
+        printf("buffer:      %i \n", buffer[i]);
         i++;
     }
+    chunkCount = i;
 
     /* Close file */
     fclose(f);
+    return 0;
 }
 
-int createBuffer(int chunkCount){
-    chunkCount = sizeof(buffer)/sizeof(int);
+int createBuffer(){
+    printf("chunkCount %i \n", chunkCount);
     /* the buffer is 1024, however, we have to take into account the bookkeping info
                         chunk count +      chunks                        chunk pointer
                     example:  3 chunks     |10|222|3|              |pointer to 10 in the shared data| pointer to 222 in the shared data .....
@@ -73,16 +78,19 @@ int createBuffer(int chunkCount){
     chunkBuffer = (int*) (shared_memory + sizeof(chunkTotal)); /*sizeof(chunkTotal) = 4*/
     chunkPointer = (int*) (shared_memory + sizeof(chunkTotal) + sizeof(chunkBuffer));
     shared_data = (int*) (shared_memory + sizeof(chunkTotal) + sizeof(chunkBuffer) + sizeof(chunkPointer));
+    return 0;
 }
 
 int main(int argc, char** argv){
+    buffer = malloc(MAXSIZE);
     printf("size of int pointer %lu \n", sizeof(char*)); /* all pointers are 8 bytes long */
     chechInput(argc, argv);
 
     FILE *f = fopen(chunkFileName, "r");
     readChunks(f, key);
-    size_t n = sizeof(key) / sizeof(key[0]);
-    createBuffer(n);
+    /*chunkCount = sizeof(buffer)/sizeof(int*);*/
+
+    createBuffer();
 
     return 0;
 }
