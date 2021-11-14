@@ -17,10 +17,11 @@ struct MLLnode* shared_memory = NULL;
 void* memory_chunk = NULL;
 
 /*functions*/
-int createBuffer(chunk_total);
+int createBuffer(int chunk_total);
 int initialise_chunks(FILE *f, char *key);
 int chechInput(int argc, char** argv);
 int get_chunk_total(FILE *f, char *key);
+void* find_free_chunks(FILE *f, int ch_num, int mode);
 
 /*structure for bookeeping linked list*/
 typedef struct MLLnode{
@@ -29,6 +30,84 @@ typedef struct MLLnode{
     void* memory;
 } MLLnode;
 
+void* first_fit(int siz, int ch_num){
+    int num = ch_num;
+    int i = 0;
+    for (i = 0; i < num; i++){
+        int ret_size = 0;
+        printf("sizes:     %i \n", siz);
+        if (shared_memory[i].size >= siz){
+            ret_size = shared_memory[i].size - siz;
+            /*
+            printf("return sizes :     %i \n", ret_size);
+            printf("shared memory sizes :     %i \n", shared_memory[i].memory);
+            printf("shared memory + 1 sizes :     %i \n", shared_memory[i+1].memory);
+            */
+            if (i!= num-1){
+                shared_memory[i+1].size += ret_size;
+                shared_memory[i+1].memory -= ret_size;
+                int j = i;
+                for (j; j < num; j++){
+                    shared_memory[j] = shared_memory[j+1];
+                }
+                shared_memory[i].memory = NULL;
+                printf("chunum %i \n", num);
+                num--;
+            } else {
+                printf("chukity chunk %i + shared mamuti %i \n ", siz, shared_memory[i].size);
+                /*last element stays the last element bet with a smaller size*/
+                shared_memory[i].size = ret_size;
+                shared_memory[i].memory += siz;
+            }
+            /*printf("shared memory + 1 sizes :     %i \n", shared_memory[i+1].memory);*/
+
+            break;
+        }
+    }
+    return shared_memory[i].memory;
+}
+
+void* find_free_chunks(FILE *f, int ch_num, int mode){
+    if (!f){printf("feiled to open file\n") ;return -1;}
+    int i = 0;
+    while (fgets(key, MAX_LENGTH, f)){
+        int siz = atoi(key);
+        if (mode == 0){
+            first_fit(siz, ch_num);
+        }
+
+
+/*
+        for (i = 0; i < ch_num; i++){
+            int ret_size = 0;
+            printf("sizes:     %i \n", siz);
+            if (shared_memory[i].size >= siz){
+                ret_size = shared_memory[i].size - siz;
+
+                printf("return sizes :     %i \n", ret_size);
+                printf("shared memory sizes :     %i \n", shared_memory[i].memory);
+                printf("shared memory + 1 sizes :     %i \n", shared_memory[i+1].memory);
+
+                shared_memory[i+1].size += ret_size;
+                shared_memory[i+1].memory -= ret_size;
+
+                shared_memory[i].memory = NULL;
+                int j = i;
+                for (j; j < ch_num; j++){
+                    shared_memory[j] = shared_memory[j+1];
+                }
+                ch_num -= 1;
+                printf("shared memory + 1 sizes :     %i \n", shared_memory[i+1].memory);
+
+                break;
+            }
+        }
+*/
+    }
+    fclose(f);
+
+
+}
 
 /*left this function unchanged*/
 int chechInput(int argc, char** argv){
@@ -57,8 +136,6 @@ int chechInput(int argc, char** argv){
     return 0;
 }
 
-
-
 int get_chunk_total(FILE *f, char *key){
     if (!f) return -1;
 
@@ -71,7 +148,7 @@ int get_chunk_total(FILE *f, char *key){
         */
         /*summs up the total memory of chunks*/
         count++;
-        retval += atoi(key); 
+        retval += atoi(key);
     }
     /*we could put this into loop so it checks after every chunk then we can stop when chuunk size excedes 1024 with bookeeping*/
     if (count*16 + retval > 1024){
@@ -84,7 +161,6 @@ int get_chunk_total(FILE *f, char *key){
     return retval;
 }
 
-
 int initialise_chunks(FILE *f, char *key){
     if (!f){printf("feiled to open file\n") ;return -1;}
 
@@ -96,7 +172,7 @@ int initialise_chunks(FILE *f, char *key){
 */
     while (fgets(key, MAX_LENGTH, f)){
         /*atoi(key); */
-        
+
         struct MLLnode newnode = shared_memory[i];
         shared_memory[i].size = atoi(key);
         shared_memory[i].memory = memory_chunk + sum;
@@ -114,7 +190,6 @@ int initialise_chunks(FILE *f, char *key){
     fclose(f);
     return i;
 }
-
 
 int createBuffer(chunk_total){
     /*printf("chunkCount %i \n", chunkCount);*/
@@ -145,13 +220,14 @@ int main(int argc, char** argv){
     printf("this is total chunk size: %d \n", total);
     /*creating buffer*/
     if(!createBuffer(total)){
-        
+
         FILE *f = fopen(chunkFileName, "r");
         int ch_num = initialise_chunks(f, key);
         printf("%d\n", ch_num);
+        FILE *fd = fopen(sizeFileName, "r");
+        find_free_chunks(fd, ch_num, 0);
 
 
-        
     }else{
         printf("mmap feiled");
         return -1;
@@ -161,7 +237,7 @@ int main(int argc, char** argv){
     /* can use this to initialise LL struct with pointers*/
     /*readChunks(f, key);*/
 
-    
+
 
     return 0;
 }
