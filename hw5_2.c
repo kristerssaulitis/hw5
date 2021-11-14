@@ -67,6 +67,45 @@ void* first_fit(int siz, int ch_num){
     return shared_memory[i].memory;
 }
 
+void* next_fit(siz, ch_num){
+    int num = ch_num;
+    int i = 0;
+    for (i = 0; i < num; i++){
+        int ret_size = 0;
+        printf("sizes:     %i \n", siz);
+        if (shared_memory[i].size >= siz){
+            if (shared_memory[i+1].size >= siz){
+                ret_size = shared_memory[i].size - siz;
+            /*
+            printf("return sizes :     %i \n", ret_size);
+            printf("shared memory sizes :     %i \n", shared_memory[i].memory);
+            printf("shared memory + 1 sizes :     %i \n", shared_memory[i+1].memory);
+            */
+                if (i!= num-1){
+                    shared_memory[i+1].size += ret_size;
+                    shared_memory[i+1].memory -= ret_size;
+                    int j = i;
+                    for (j; j < num; j++){
+                        shared_memory[j] = shared_memory[j+1];
+                    }
+                    shared_memory[i].memory = NULL;
+                    printf("chunum %i \n", num);
+                    num--;
+                } else {
+                    printf("chukity chunk %i + shared mamuti %i \n ", siz, shared_memory[i].size);
+                    /*last element stays the last element bet with a smaller size*/
+                    shared_memory[i].size = ret_size;
+                    shared_memory[i].memory += siz;
+                }
+                /*printf("shared memory + 1 sizes :     %i \n", shared_memory[i+1].memory);*/
+
+                break;
+            }
+        }
+    }
+    return shared_memory[i].memory;
+}
+
 void* find_free_chunks(FILE *f, int ch_num, int mode){
     if (!f){printf("feiled to open file\n") ;return -1;}
     int i = 0;
@@ -74,6 +113,8 @@ void* find_free_chunks(FILE *f, int ch_num, int mode){
         int siz = atoi(key);
         if (mode == 0){
             first_fit(siz, ch_num);
+        } else if (mode == 1){
+            next_fit(siz, ch_num);
         }
 
 
