@@ -64,7 +64,8 @@ int createBuffer(int chunkCount){
     chunkCount = sizeof(buffer)/sizeof(int);
     /* the buffer is 1024, however, we have to take into account the bookkeping info
                         chunk count +      chunks                        chunk pointer
-                    example:  5 chunks     |10|222|3|4567|5000|              |pointer to 10 in the shared memory| pointer to 222 in the .....|||||
+                    example:  3 chunks     |10|222|3|              |pointer to 10 in the shared data| pointer to 222 in the shared data .....
+    | 0000 | 0000 0000 0000 | 00000000 00000000 0000000 | shared data | = 1024 bytes
     */
     int memoryBeforeShared = sizeof(int) + (chunkCount * sizeof(int)) + (chunkCount * sizeof(int*));
     shared_memory = mmap(NULL, MAXSIZE-memoryBeforeShared, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0);
