@@ -139,7 +139,6 @@ void* last_fit(siz, ch_num){
     return shared_memory[i].memory;
 }
 
-
 void* find_free_chunks(FILE *f, int ch_num, int mode){
     if (!f){printf("feiled to open file\n") ;return -1;}
     int i = 0;
