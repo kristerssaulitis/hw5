@@ -88,7 +88,6 @@ int main(int argc, char** argv){
 
     FILE *f = fopen(chunkFileName, "r");
     readChunks(f, key);
-    /*chunkCount = sizeof(buffer)/sizeof(int*);*/
 
     createBuffer();
 
