@@ -11,6 +11,7 @@
 char* chunkFileName;
 char* sizeFileName;
 char key[256];
+int indexNext = 0;
 
 /*buffer memory pointers*/
 struct MLLnode* shared_memory = NULL;
@@ -50,7 +51,6 @@ void* first_fit(int siz, int ch_num){
                 for (j; j < num; j++){
                     shared_memory[j] = shared_memory[j+1];
                 }
-                shared_memory[i].memory = NULL;
                 printf("chunum %i \n", num);
                 num--;
             } else {
@@ -60,17 +60,83 @@ void* first_fit(int siz, int ch_num){
                 shared_memory[i].memory += siz;
             }
             /*printf("shared memory + 1 sizes :     %i \n", shared_memory[i+1].memory);*/
-
             break;
         }
     }
     return shared_memory[i].memory;
 }
 
+void* next_fit(int siz, int ch_num){
+    int num = ch_num;
+    int i = 0;
+    int count = 0;
+    for (i = indexNext; i < num; i++){
+        int ret_size = 0;
+        printf("sizes:     %i \n", siz);
+        if (shared_memory[i].size >= siz){
+            ret_size = shared_memory[i].size - siz;
+            if (i!= num-1){
+                shared_memory[i+1].size += ret_size;
+                shared_memory[i+1].memory -= ret_size;
+                int j = i;
+                for (j; j < num; j++){
+                    shared_memory[j] = shared_memory[j+1];
+                }
+                printf("chunum %i \n", num);
+                num--;
+            } else {
+                /*last element stays the last element bet with a smaller size*/
+                shared_memory[i].size = ret_size;
+                shared_memory[i].memory += siz;
+            }
+            /*printf("shared memory + 1 sizes :     %i \n", shared_memory[i+1].memory);*/
+            break;
+        } else {
+            if (i < num){
+                i = indexNext +1;
+            } else{
+                i = 0;
+                indexNext = 0;
+            }
+
+        }
+    }
+    return shared_memory[i].memory;
+}
+
+void* last_fit(int siz, int ch_num){
+    int num = ch_num;
+    int i = 0;
+    for (i = 0; i < num; i++){
+        int ret_size = 0;
+        printf("sizes:     %i \n", siz);
+        if (shared_memory[-1-i].size >= siz){
+            ret_size = shared_memory[-1-i].size - siz;
+            if (i!= num-1){
+                shared_memory[i+1].size += ret_size;
+                shared_memory[i+1].memory -= ret_size;
+                int j = i;
+                for (j; j < num; j++){
+                    shared_memory[j] = shared_memory[j+1];
+                }
+                printf("chunum %i \n", num);
+                num--;
+            } else {
+                printf("chukity chunk %i + shared mamuti %i \n ", siz, shared_memory[i].size);
+                /*last element stays the last element bet with a smaller size*/
+                shared_memory[i].size = ret_size;
+                shared_memory[i].memory += siz;
+            }
+            break;
+        }
+    }
+    return shared_memory[i].memory;
+}
 
 void* find_free_chunks(FILE *f, int ch_num, int mode){
     if (!f){printf("feiled to open file\n") ;return -1;}
     int i = 0;
+
     while (fgets(key, MAX_LENGTH, f)){
         int siz = atoi(key);
         printf("!!!! SIZ is %d\n", siz);
@@ -78,37 +144,14 @@ void* find_free_chunks(FILE *f, int ch_num, int mode){
             first_fit(siz, ch_num);
         } else if (mode == 1){
             next_fit(siz, ch_num);
+<<<<<<< HEAD
         } else if (mode == 2){
             best_fit(siz, ch_num);
+=======
+        } if (mode == 2){
+            last_fit(siz, ch_num);
+>>>>>>> 0508a676e4407e7a28018a472f63920829a5f09a
         }
-
-
-/*
-        for (i = 0; i < ch_num; i++){
-            int ret_size = 0;
-            printf("sizes:     %i \n", siz);
-            if (shared_memory[i].size >= siz){
-                ret_size = shared_memory[i].size - siz;
-
-                printf("return sizes :     %i \n", ret_size);
-                printf("shared memory sizes :     %i \n", shared_memory[i].memory);
-                printf("shared memory + 1 sizes :     %i \n", shared_memory[i+1].memory);
-
-                shared_memory[i+1].size += ret_size;
-                shared_memory[i+1].memory -= ret_size;
-
-                shared_memory[i].memory = NULL;
-                int j = i;
-                for (j; j < ch_num; j++){
-                    shared_memory[j] = shared_memory[j+1];
-                }
-                ch_num -= 1;
-                printf("shared memory + 1 sizes :     %i \n", shared_memory[i+1].memory);
-
-                break;
-            }
-        }
-*/
     }
     fclose(f);
 
