@@ -18,11 +18,13 @@ struct MLLnode* shared_memory = NULL;
 void* memory_chunk = NULL;
 
 /*functions*/
+int ch_num;
+
 int createBuffer(int chunk_total);
 int initialise_chunks(FILE *f, char *key);
 int chechInput(int argc, char** argv);
 int get_chunk_total(FILE *f, char *key);
-void* find_free_chunks(FILE *f, int ch_num, int mode);
+void* find_free_chunks(FILE *f, int mode);
 
 /*structure for bookeeping linked list*/
 typedef struct MLLnode{
@@ -31,7 +33,7 @@ typedef struct MLLnode{
     void* memory;
 } MLLnode;
 
-void* first_fit(int siz, int ch_num){
+void* first_fit(int siz){
     int num = ch_num;
     int i = 0;
     for (i = 0; i < num; i++){
@@ -66,7 +68,7 @@ void* first_fit(int siz, int ch_num){
     return shared_memory[i].memory;
 }
 
-void* next_fit(int siz, int ch_num){
+void* next_fit(int siz){
     int num = ch_num;
     int i = 0;
     int count = 0;
@@ -104,23 +106,24 @@ void* next_fit(int siz, int ch_num){
     return shared_memory[i].memory;
 }
 
-void* last_fit(int siz, int ch_num){
-    int num = ch_num;
-    int i = 0;
-    for (i = 0; i < num; i++){
+void* last_fit(int siz){
+    int i = 1;
+    for (i; i < ch_num + 1; i++){
         int ret_size = 0;
         printf("sizes:     %i \n", siz);
-        if (shared_memory[-1-i].size >= siz){
-            ret_size = shared_memory[-1-i].size - siz;
-            if (i!= num-1){
+        if (shared_memory[ch_num-i].size >= siz){
+            printf("WE HERE BITCH ch num %d \n", ch_num);
+            ret_size = shared_memory[ch_num-i].size - siz;
+            if (i!= ch_num-1){
                 shared_memory[i+1].size += ret_size;
                 shared_memory[i+1].memory -= ret_size;
                 int j = i;
-                for (j; j < num; j++){
+                for (j; j < ch_num; j++){
                     shared_memory[j] = shared_memory[j+1];
                 }
-                printf("chunum %i \n", num);
-                num--;
+                printf("chunum %i \n", ch_num);
+                ch_num--;
+                printf("this is the num after we find the right place %d", ch_num);
             } else {
                 printf("chukity chunk %i + shared mamuti %i \n ", siz, shared_memory[i].size);
                 /*last element stays the last element bet with a smaller size*/
@@ -133,7 +136,7 @@ void* last_fit(int siz, int ch_num){
     return shared_memory[i].memory;
 }
 
-void* find_free_chunks(FILE *f, int ch_num, int mode){
+void* find_free_chunks(FILE *f, int mode){
     if (!f){printf("feiled to open file\n") ;return -1;}
     int i = 0;
 
@@ -141,16 +144,11 @@ void* find_free_chunks(FILE *f, int ch_num, int mode){
         int siz = atoi(key);
         printf("!!!! SIZ is %d\n", siz);
         if (mode == 0){
-            first_fit(siz, ch_num);
+            first_fit(siz);
         } else if (mode == 1){
-            next_fit(siz, ch_num);
-<<<<<<< HEAD
-        } else if (mode == 2){
-            best_fit(siz, ch_num);
-=======
+            next_fit(siz);
         } if (mode == 2){
-            last_fit(siz, ch_num);
->>>>>>> 0508a676e4407e7a28018a472f63920829a5f09a
+            last_fit(siz);
         }
     }
     fclose(f);
@@ -271,10 +269,10 @@ int main(int argc, char** argv){
     if(!createBuffer(total)){
 
         FILE *f = fopen(chunkFileName, "r");
-        int ch_num = initialise_chunks(f, key);
+        ch_num = initialise_chunks(f, key);
         printf("%d\n", ch_num);
         FILE *fd = fopen(sizeFileName, "r");
-        find_free_chunks(fd, ch_num, 2);
+        find_free_chunks(fd, 2);
 
 
     }else{
