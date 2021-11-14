@@ -1,5 +1,5 @@
 all:
-	gcc hw5.c
+	gcc hw5_2.c
 run:
 	./a.out -c=chunks -s=sizes
 clean:
