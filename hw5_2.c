@@ -105,7 +105,7 @@ int initialise_chunks(FILE *f, char *key){
         /*printf("this is nodes size %d and size of struct: %d in comperison to pointer %d and struct in stack %d\n", shared_memory[i].size, (int)sizeof(shared_memory[i]), (int)sizeof(test), (int)sizeof(test2));*/
 
         /*cpmment to test pointers to memory - all good*/
-        /*printf("here are the pointers: %d end of free data is here %d\n", shared_memory[i].memory, (void*)shared_memory + MAXSIZE);*/
+        printf("here are the pointers: %d end of free data is here %d\n", shared_memory[i].memory, (void*)shared_memory + MAXSIZE);
 
         sum += shared_memory[i].size;
         i++;
@@ -149,7 +149,7 @@ int main(int argc, char** argv){
         FILE *f = fopen(chunkFileName, "r");
         int ch_num = initialise_chunks(f, key);
         printf("%d\n", ch_num);
-
+        
 
         
     }else{
