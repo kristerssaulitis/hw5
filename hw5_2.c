@@ -377,6 +377,7 @@ int main(int argc, char** argv){
 
     if (total < 0){
         printf("invalid chunk size total; over 1024\n");
+        return -1;
     }
 
     printf("this is total chunk size: %d \n", total);
