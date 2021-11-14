@@ -8,7 +8,7 @@
 
 char* chunkFileName;
 char* sizeFileName;
-int* buffer[1024];
+int buffer[1024];
 char key[256];
 
 char* shared_memory = NULL;
@@ -61,7 +61,7 @@ int readChunks(FILE *f, char *key){
 }
 
 int createBuffer(int chunkCount){
-    int chunkCount = sizeof(buffer)/sizeof(int);
+    chunkCount = sizeof(buffer)/sizeof(int);
     /* the buffer is 1024, however, we have to take into account the bookkeping info
                         chunk count +      chunks                        chunk pointer
                     example:  5 chunks     |10|222|3|4567|5000|              |pointer to 10 in the shared memory| pointer to 222 in the .....|||||
