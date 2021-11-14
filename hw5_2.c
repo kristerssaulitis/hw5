@@ -66,7 +66,7 @@ void* first_fit(int siz, int ch_num){
     return shared_memory[i].memory;
 }
 
-void* next_fit(siz, ch_num){
+void* next_fit(int siz, int ch_num){
     int num = ch_num;
     int i = 0;
     int count = 0;
@@ -104,7 +104,7 @@ void* next_fit(siz, ch_num){
     return shared_memory[i].memory;
 }
 
-void* last_fit(siz, ch_num){
+void* last_fit(int siz, int ch_num){
     int num = ch_num;
     int i = 0;
     for (i = 0; i < num; i++){
@@ -112,11 +112,6 @@ void* last_fit(siz, ch_num){
         printf("sizes:     %i \n", siz);
         if (shared_memory[-1-i].size >= siz){
             ret_size = shared_memory[-1-i].size - siz;
-            /*
-            printf("return sizes :     %i \n", ret_size);
-            printf("shared memory sizes :     %i \n", shared_memory[i].memory);
-            printf("shared memory + 1 sizes :     %i \n", shared_memory[i+1].memory);
-            */
             if (i!= num-1){
                 shared_memory[i+1].size += ret_size;
                 shared_memory[i+1].memory -= ret_size;
@@ -132,7 +127,6 @@ void* last_fit(siz, ch_num){
                 shared_memory[i].size = ret_size;
                 shared_memory[i].memory += siz;
             }
-            /*printf("shared memory + 1 sizes :     %i \n", shared_memory[i+1].memory);*/
             break;
         }
     }
