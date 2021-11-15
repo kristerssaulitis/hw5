@@ -12,6 +12,8 @@ char* chunkFileName;
 char* sizeFileName;
 char key[256];
 int indexNext = 0;
+int ch_num = 0;
+int num = 0;
 
 /*buffer memory pointers*/
 struct MLLnode* shared_memory = NULL;
@@ -32,9 +34,9 @@ typedef struct MLLnode{
 } MLLnode;
 
 void* first_fit(int siz, int ch_num){
-    int num = ch_num;
+    num = ch_num;
     int i = 0;
-    for (i = 0; i < num; i++){
+    for (i = 0; i < ch_num; i++){
         int ret_size = 0;
         printf("sizes:     %i \n", siz);
         if (shared_memory[i].size >= siz){
@@ -67,7 +69,7 @@ void* first_fit(int siz, int ch_num){
 }
 
 void* next_fit(int siz, int ch_num){
-    int num = ch_num;
+    num = ch_num;
     int i = 0;
     int count = 0;
     for (i = indexNext; i < num; i++){
@@ -105,13 +107,14 @@ void* next_fit(int siz, int ch_num){
 }
 
 void* last_fit(int siz, int ch_num){
-    int num = ch_num;
+    num = ch_num;
     int i = 0;
     for (i = 0; i < num; i++){
         int ret_size = 0;
         printf("sizes:     %i \n", siz);
-        if (shared_memory[-1-i].size >= siz){
-            ret_size = shared_memory[-1-i].size - siz;
+        if (shared_memory[num-i].size >= siz){
+             printf("sizes:     %i \n", siz);
+            ret_size = shared_memory[num-i].size - siz;
             if (i!= num-1){
                 shared_memory[i+1].size += ret_size;
                 shared_memory[i+1].memory -= ret_size;
@@ -265,7 +268,7 @@ int main(int argc, char** argv){
     if(!createBuffer(total)){
 
         FILE *f = fopen(chunkFileName, "r");
-        int ch_num = initialise_chunks(f, key);
+        ch_num = initialise_chunks(f, key);
         printf("%d\n", ch_num);
         FILE *fd = fopen(sizeFileName, "r");
         find_free_chunks(fd, ch_num, 2);
