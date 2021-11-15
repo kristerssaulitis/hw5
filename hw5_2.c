@@ -13,6 +13,7 @@ char* chunkFileName;
 char* sizeFileName;
 char key[256];
 int indexNext = 0;
+int count = 0;
 
 /*buffer memory pointers*/
 struct MLLnode* shared_memory = NULL;
@@ -302,7 +303,6 @@ int get_chunk_total(FILE *f, char *key){
     if (!f) return -1;
 
     int retval = 0;
-    int count = 0;
     while (fgets(key, MAX_LENGTH, f)){
         /*
         //buffer[i] = atoi(key);
@@ -311,6 +311,13 @@ int get_chunk_total(FILE *f, char *key){
         /*summs up the total memory of chunks*/
         count++;
         retval += atoi(key);
+
+        if (count*16 + retval > 1024){
+        printf("chunk total is too big\n");
+        count--;
+        retval -= atoi(key);
+        return retval;
+    }
     }
     /*we could put this into loop so it checks after every chunk then we can stop when chuunk size excedes 1024 with bookeeping*/
     if (count*16 + retval > 1024){
@@ -332,7 +339,7 @@ int initialise_chunks(FILE *f, char *key){
     struct MLLnode* test;
     struct MLLnode test2;
 */
-    while (fgets(key, MAX_LENGTH, f)){
+    while (fgets(key, MAX_LENGTH, f) && i < count){
         /*atoi(key); */
 
         struct MLLnode newnode = shared_memory[i];
