@@ -1,3 +1,67 @@
 Your answers go here!
 
 Also start by noting if You have a teammate and if I should check this git repository or Your teammates for the grading of code.
+
+Overall
+Everything works all methods of allocation are functional if there are any questions
+please ask we will make clerifications with coments or just discuss the code.
+COuldn't add better coments because it is 2:00 am
+
+Note 
+we did not need to implement the protection against overflow of allocated memory so if you write then you allocated you will write to the next block 
+this will not break the allocation program but you will write in free available memory therefore the info there can be overwriten.
+
+
+Task3
+Description of algorithms
+description of buffer and block allocation is in Questionere
+
+Best fit goes through all book keeping structs and keeps track of the array number for the best fit block
+best fir
+     block is found by compearing in loop of structs the last best fit to the distance of current struct required memory allocation 
+ -> current struct.size - allocatbale (before check if that size fits (struct.size >= allocatable) )
+ so we loop through all structs and keep only the best fit than we return its pointer and reserve the memory
+
+Worst fit
+     very similar to best fit goes through all the structs but only keeps the struct with the biggest size everything else the same as best fit.
+
+First fit
+    Kristers 
+Next fit
+    Kristers 
+Last fit
+    Kristers
+
+mesurments
+
+for mode: 4 worst fit on chunks2 and sizes2
+real    0m0,001s
+user    0m0,001s
+sys     0m0,000s
+
+
+for mode: 3 
+real    0m0,002s
+user    0m0,000s
+sys     0m0,001s
+
+for mode: 2
+real    0m0,002s
+user    0m0,002s
+sys     0m0,000s
+
+for mode: 1
+real    0m0,001s
+user    0m0,001s
+sys     0m0,000s
+
+for mode: 0
+real    0m0,001s
+user    0m0,000s
+sys     0m0,001s
+
+To be honest with this small of a size I don't think I can judge the diferences they are all quite equal and changes are due to 
+my computers resources at the time of running it might be switching to something else in the process as we use system calls
+
+Overall conclusion 
+It is 2:19am it works looks to be fast enough I think I did my job.
