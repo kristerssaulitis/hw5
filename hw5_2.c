@@ -13,6 +13,7 @@ char* chunkFileName;
 char* sizeFileName;
 char key[256];
 int indexNext = 0;
+int count = 0;
 
 int ch_num = 0;
 int num = 0;
@@ -78,7 +79,6 @@ void* first_fit(int siz){
 
 
 void* next_fit(int siz){
-
     int i = 0;
     int count = 0;
     void* return_pointer = NULL;
