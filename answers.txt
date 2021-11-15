@@ -1,14 +1,15 @@
 Your answers go here!
 
 Also start by noting if You have a teammate and if I should check this git repository or Your teammates for the grading of code.
+- HW5 was done by Kristers and Eriks together, you can view : bitl-cs / 2021-pbm765-hw5-kristerssaulitis
+
 
 Overall
 Everything works all methods of allocation are functional if there are any questions
 please ask we will make clerifications with coments or just discuss the code.
-COuldn't add better coments because it is 2:00 am
 
-Note 
-we did not need to implement the protection against overflow of allocated memory so if you write then you allocated you will write to the next block 
+Note
+we did not need to implement the protection against overflow of allocated memory so if you write then you allocated you will write to the next block
 this will not break the allocation program but you will write in free available memory therefore the info there can be overwriten.
 
 
@@ -16,21 +17,22 @@ Task3
 Description of algorithms
 description of buffer and block allocation is in Questionere
 
-Best fit goes through all book keeping structs and keeps track of the array number for the best fit block
-best fir
-     block is found by compearing in loop of structs the last best fit to the distance of current struct required memory allocation 
+Best fit is is in O(n^2) // a little bit slower because finds the best chunk for the size
+    It goes through all book keeping structs and keeps track of the array number for the best fit block
+
+     block is found by compearing in loop of structs the last best fit to the distance of current struct required memory allocation
  -> current struct.size - allocatbale (before check if that size fits (struct.size >= allocatable) )
  so we loop through all structs and keep only the best fit than we return its pointer and reserve the memory
 
-Worst fit
-     very similar to best fit goes through all the structs but only keeps the struct with the biggest size everything else the same as best fit.
+Worst fit is in O(n^2) // a little bit slower because finds the worst chunk for the size
+    It is very similar to best fit goes through all the structs but only keeps the struct with the biggest size everything else the same as best fit.
 
-First fit
-    Kristers 
-Next fit
-    Kristers 
-Last fit
-    Kristers
+First fit is in O(n^2)
+    First fit is for looping through the sizes and assining the first chunk it fits.
+Next fit is in O(n^2)
+    It begins as the first fit to find a free block but when called next time it starts searching from where it left off, not from the beginning.
+Last fit (Our implemented fit) is in O(n^2)
+    It is a reverse first fit, meaning that it assigns the sizes to the last chunk available.
 
 mesurments
 
@@ -40,7 +42,7 @@ user    0m0,001s
 sys     0m0,000s
 
 
-for mode: 3 
+for mode: 3
 real    0m0,002s
 user    0m0,000s
 sys     0m0,001s
@@ -60,8 +62,12 @@ real    0m0,001s
 user    0m0,000s
 sys     0m0,001s
 
-To be honest with this small of a size I don't think I can judge the diferences they are all quite equal and changes are due to 
+To be honest with this small of a size I don't think I can judge the diferences they are all quite equal and changes are due to
 my computers resources at the time of running it might be switching to something else in the process as we use system calls
 
-Overall conclusion 
-It is 2:19am it works looks to be fast enough I think I did my job.
+Moreover, since every fit is in O(n^2), they should run similarly. Worst and Best fit shoudld be a little bit slower because of extra best/worst chunk finding.
+There can be implementations where worst/best fit can be implemented more safely in O(n^3), therefore, our code was quite fast. (there would be another foorloop that finds the best/worst chunk)
+
+Overall conclusion
+The program does what it should, and does it fast. Since the buffer is only 1024 bytes, moreover, ther is bookkeping information,
+it is a small buffer. Thus, if the chunks can fit in the buffer, and if the sizes are equal or smaller than the chunk total, the program will most probobly never be slow.
